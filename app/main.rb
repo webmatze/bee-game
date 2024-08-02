@@ -128,19 +128,30 @@ def tick args
     g: 206,
     b: 235
   }
+
   # Handle input for bee movement
   if args.inputs.left
-    $bee.move_left
-    $camera_x = [$camera_x - 1, 0].max
+    if $bee.x > 0  # Assuming the left side of the screen is at x=0
+      $bee.move_left
+    else
+      $camera_x = [$camera_x - 1, 0].max
+    end
   elsif args.inputs.right
-    $bee.move_right
-    $camera_x += 1
+    if $bee.x < 56  # Assuming the right side of the screen is at x=56 (64 - 8)
+      $bee.move_right
+    else
+      $camera_x = [$camera_x + 1, World::WORLD_WIDTH - 64].min
+    end
   end
 
   if args.inputs.up
-    $bee.move_up
+    if $bee.y < 56  # Assuming the top of the screen is at y=56 (64 - 8)
+      $bee.move_up
+    end
   elsif args.inputs.down
-    $bee.move_down
+    if $bee.y > 0  # Assuming the bottom of the screen is at y=0
+      $bee.move_down
+    end
   end
 
   $world.render(args, $camera_x)
