@@ -40,7 +40,18 @@ class World
   end
 
   def generate_world
-    # TODO: Implement world generation with flowers and obstacles
+    # Generate sky (6 rows) and ground (2 rows)
+    (0...8).each do |y|
+      (0...@tiles[y].length).each do |x|
+        @tiles[y][x] = y > 2 ? 0 : 1
+      end
+    end
+
+    # Add random flowers in the third row from the bottom
+    flower_row = 3
+    @tiles[flower_row].map! do |tile|
+      rand < 0.2 ? 2 : tile  # 20% chance of a flower
+    end
   end
 
   def render(args, camera_x)
@@ -63,8 +74,14 @@ class World
   end
 
   def tile_sprite(tile)
-    # TODO: Return appropriate sprite path based on tile type
-    'sprites/tile.png'
+    case tile
+    when 0
+      'sprites/sky.png'
+    when 1
+      'sprites/grass.png'
+    when 2
+      'sprites/flower_1.png'
+    end
   end
 end
 
