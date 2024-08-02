@@ -23,9 +23,35 @@ class Bee
     @pollen = 0
   end
 
+  def move_left
+    move(-1, 0)
+  end
+
+  def move_right
+    move(1, 0)
+  end
+
+  def move_up
+    move(0, 1)
+  end
+
+  def move_down
+    move(0, -1)
+  end
+
   def move(dx, dy)
     @x += dx
     @y += dy
+  end
+
+  def render(args)
+    args.lowrez.sprites << {
+      x: @x,
+      y: @y,
+      w: 8,
+      h: 8,
+      path: 'sprites/bee_1.png'
+    }
   end
 end
 
@@ -40,7 +66,7 @@ class World
   end
 
   def generate_world
-    # Generate sky (6 rows) and ground (2 rows)
+    # Generate sky (6 rows) and ground (3 rows)
     (0...8).each do |y|
       (0...@tiles[y].length).each do |x|
         @tiles[y][x] = y > 2 ? 0 : 1
@@ -56,7 +82,8 @@ class World
 
   def render(args, camera_x)
     visible_start = (camera_x / TILE_SIZE).floor
-    visible_end = visible_start + (64 / TILE_SIZE)
+    visible_end = visible_start + (64 / TILE_SIZE) + 1
+    visible_end = [visible_end, WORLD_WIDTH / TILE_SIZE].min
 
     (0...8).each do |y|
       (visible_start...visible_end).each do |x|
@@ -101,8 +128,23 @@ def tick args
     g: 206,
     b: 235
   }
+  # Handle input for bee movement
+  if args.inputs.left
+    $bee.move_left
+    $camera_x = [$camera_x - 1, 0].max
+  elsif args.inputs.right
+    $bee.move_right
+    $camera_x += 1
+  end
+
+  if args.inputs.up
+    $bee.move_up
+  elsif args.inputs.down
+    $bee.move_down
+  end
 
   $world.render(args, $camera_x)
+  $bee.render(args)
 
   args.lowrez.labels  << {
     x: 32,
