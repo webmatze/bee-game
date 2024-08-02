@@ -21,6 +21,8 @@ class Bee
     @x = 16
     @y = 32
     @pollen = 0
+    @animation_frame = 0
+    @last_frame_change = 0
   end
 
   def move_left
@@ -45,12 +47,19 @@ class Bee
   end
 
   def render(args)
+    current_time = args.state.tick_count
+
+    if current_time - @last_frame_change >= 10
+      @animation_frame = (@animation_frame + 1) % 2
+      @last_frame_change = current_time
+    end
+
     args.lowrez.sprites << {
       x: @x,
       y: @y,
       w: 8,
       h: 8,
-      path: 'sprites/bee_1.png'
+      path: "sprites/bee_#{@animation_frame + 1}.png"
     }
   end
 end
