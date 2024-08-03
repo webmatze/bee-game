@@ -15,7 +15,11 @@ require 'app/lowrez.rb'
 # This file contains the main game logic, including the Bee and World classes.
 
 class Bee
-  attr_accessor :x, :y, :pollen
+  GRAVITY = 0.005  # Constant for gravity effect
+  JUMP_SPEED = 0.05
+  X_SPEED = 0.5
+
+  attr_accessor :x, :y, :pollen, :velocity_y
 
   def initialize
     @x = 16
@@ -25,22 +29,36 @@ class Bee
     @last_frame_change = 0
     @tilt_angle = 0
     @last_dx = 0
+    @velocity_y = 0  # Initialize vertical velocity
+  end
+
+  def apply_gravity
+    @velocity_y -= GRAVITY
+    @y += @velocity_y
+    @y = [@y, 0].max  # Prevent going below the bottom of the screen
+  end
+
+  def update(args)
+    apply_gravity
+    update_tilt
   end
 
   def move_left
-    move(-1, 0)
+    move(-X_SPEED, 0)
   end
 
   def move_right
-    move(1, 0)
+    move(X_SPEED, 0)
   end
 
   def move_up
     move(nil, 1)
+    @velocity_y = JUMP_SPEED
   end
 
   def move_down
     move(nil, -1)
+    @velocity_y = -JUMP_SPEED
   end
 
   def stop
@@ -54,7 +72,7 @@ class Bee
   end
 
   def update_tilt
-    target_tilt = @last_dx * 90  # 10 degrees left or right
+    target_tilt = @last_dx.round * 90  # 10 degrees left or right
     @tilt_angle = (@tilt_angle * 0.8 + target_tilt * 0.2).round  # Smooth transition
   end
 
@@ -156,13 +174,13 @@ def tick args
     if $bee.x > 0  # Assuming the left side of the screen is at x=0
       $bee.move_left
     else
-      $camera_x = [$camera_x - 1, 0].max
+      $camera_x = [$camera_x - Bee::X_SPEED, 0].max
     end
   elsif args.inputs.right
     if $bee.x < 56  # Assuming the right side of the screen is at x=56 (64 - 8)
       $bee.move_right
     else
-      $camera_x = [$camera_x + 1, World::WORLD_WIDTH - 64].min
+      $camera_x = [$camera_x + Bee::X_SPEED, World::WORLD_WIDTH - 64].min
     end
   else
     $bee.stop
@@ -178,7 +196,7 @@ def tick args
     end
   end
 
-  $bee.update_tilt
+  $bee.update(args)
 
   $world.render(args, $camera_x)
   $bee.render(args)
