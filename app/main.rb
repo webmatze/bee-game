@@ -23,6 +23,8 @@ class Bee
     @pollen = 0
     @animation_frame = 0
     @last_frame_change = 0
+    @tilt_angle = 0
+    @last_dx = 0
   end
 
   def move_left
@@ -34,16 +36,26 @@ class Bee
   end
 
   def move_up
-    move(0, 1)
+    move(nil, 1)
   end
 
   def move_down
-    move(0, -1)
+    move(nil, -1)
+  end
+
+  def stop
+    move(0, 0)
   end
 
   def move(dx, dy)
-    @x += dx
-    @y += dy
+    @x += dx if dx
+    @y += dy if dy
+    @last_dx = dx if dx
+  end
+
+  def update_tilt
+    target_tilt = @last_dx * 90  # 10 degrees left or right
+    @tilt_angle = (@tilt_angle * 0.8 + target_tilt * 0.2).round  # Smooth transition
   end
 
   def render(args)
@@ -59,7 +71,8 @@ class Bee
       y: @y,
       w: 8,
       h: 8,
-      path: "sprites/bee_#{@animation_frame + 1}.png"
+      path: "sprites/bee_#{@animation_frame + 1}.png",
+      angle: -@tilt_angle
     }
   end
 end
@@ -151,6 +164,8 @@ def tick args
     else
       $camera_x = [$camera_x + 1, World::WORLD_WIDTH - 64].min
     end
+  else
+    $bee.stop
   end
 
   if args.inputs.up
@@ -162,6 +177,8 @@ def tick args
       $bee.move_down
     end
   end
+
+  $bee.update_tilt
 
   $world.render(args, $camera_x)
   $bee.render(args)
@@ -175,7 +192,7 @@ def tick args
     r: 0,
     g: 0,
     b: 0,
-    a: 255,
+    a: 128,
     font: LOWREZ_FONT_PATH
   }
 
