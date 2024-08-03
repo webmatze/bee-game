@@ -1,3 +1,4 @@
+require 'smaug.rb'
 require 'app/lowrez.rb'
 
 # Bee Pollination Adventure
