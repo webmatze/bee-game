@@ -96,13 +96,43 @@ class Bee
   end
 end
 
+class Flower
+  attr_reader :x, :y, :pollen
+
+  def initialize(x, y)
+    @x = x
+    @y = y
+    @pollen = 100  # Initial pollen amount
+  end
+
+  def collect_pollen(amount)
+    collected = [@pollen, amount].min
+    @pollen -= collected
+    collected
+  end
+
+  def render(args, camera_x)
+    screen_x = (@x * World::TILE_SIZE) - camera_x
+    args.lowrez.sprites << {
+      x: screen_x,
+      y: @y * World::TILE_SIZE,
+      w: World::TILE_SIZE,
+      h: World::TILE_SIZE,
+      path: 'sprites/flower_1.png'
+    }
+  end
+end
+
 class World
   TILE_SIZE = 8
   WORLD_WIDTH = 320  # 5 screens wide
   WORLD_HEIGHT = 64
 
+  attr_reader :flowers
+
   def initialize
     @tiles = Array.new(WORLD_HEIGHT / TILE_SIZE) { Array.new(WORLD_WIDTH / TILE_SIZE, 0) }
+    @flowers = []
     generate_world
   end
 
@@ -116,8 +146,8 @@ class World
 
     # Add random flowers in the third row from the bottom
     flower_row = 3
-    @tiles[flower_row].map! do |tile|
-      rand < 0.2 ? 2 : tile  # 20% chance of a flower
+    (0..39).to_a.shuffle[0..10].each do |x|
+      @flowers << Flower.new(x, flower_row)
     end
   end
 
@@ -147,8 +177,6 @@ class World
       'sprites/sky.png'
     when 1
       'sprites/grass.png'
-    when 2
-      'sprites/flower_1.png'
     end
   end
 end
@@ -200,6 +228,9 @@ def tick args
   $bee.update(args)
 
   $world.render(args, $camera_x)
+  $world.flowers.each do |flower|
+    flower.render(args, $camera_x)
+  end
   $bee.render(args)
 
   args.lowrez.labels  << {
