@@ -27,7 +27,7 @@ class Bee
   def update(args)
     apply_gravity
     update_tilt
-    collect_from_flowers(args.state.game.world.flowers)
+    collect_pollen_from_flowers(args)
   end
 
   def move_left
@@ -63,19 +63,29 @@ class Bee
     @tilt_angle = (@tilt_angle * 0.8 + target_tilt * 0.2).round  # Smooth transition
   end
 
-  def collect_from_flowers(flowers)
+  def collect_pollen_from_flowers(args)
+    flowers = args.state.game.world.flowers
     flowers.each do |flower|
-      if in_range?(flower)
-        collected_pollen = flower.collect_pollen(5)
-        collected_nectar = flower.collect_nectar(5)
+      if in_range?(flower, args)
+        collected_pollen = flower.collect_pollen(1)
         @pollen += collected_pollen
+      end
+    end
+  end
+
+  def collect_nectar_from_flowers(args)
+    flowers = args.state.game.world.flowers
+    flowers.each do |flower|
+      if in_range?(flower, args)
+        collected_nectar = flower.collect_nectar(5)
         @nectar += collected_nectar
       end
     end
   end
 
-  def in_range?(flower)
-    dx = (flower.x * World::TILE_SIZE) - @x
+  def in_range?(flower, args)
+    camera_x = args.state.game.camera_x
+    dx = (flower.x * World::TILE_SIZE) - camera_x - @x
     dy = (flower.y * World::TILE_SIZE) - @y
     distance = Math.sqrt(dx * dx + dy * dy)
     distance <= COLLECTION_RANGE

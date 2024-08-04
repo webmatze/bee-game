@@ -77,12 +77,17 @@ class Game
     @world.render(args, @camera_x)
     @world.flowers.each { |flower| flower.render(args, @camera_x) }
     @bee.render(args)
+    render_text(args, "Pollen: #{@bee.pollen}", 2, 62)
+    render_text(args, "Nectar: #{@bee.nectar}", 2, 56)
+  end
+
+  def render_text(args, text, x, y, alignment_enum = 0)
     args.lowrez.labels << {
-      x: 32,
-      y: 60,
-      text: "LowrezJam 2024",
+      x: x,
+      y: y,
+      text: text,
       size_enum: LOWREZ_FONT_SM,
-      alignment_enum: 1,
+      alignment_enum: alignment_enum,
       r: 0,
       g: 0,
       b: 0,
