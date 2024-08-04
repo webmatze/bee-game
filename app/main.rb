@@ -17,12 +17,13 @@ require 'app/world.rb'
 # - Obstacles and challenges (to be implemented)
 
 class Game
-  attr_reader :bee, :world, :camera_x
+  attr_reader :bee, :world, :camera_x, :particles
 
   def initialize
     @bee = Bee.new
     @world = World.new
     @camera_x = 0
+    @particles = []
   end
 
   def tick(args)
@@ -63,6 +64,7 @@ class Game
 
   def update(args)
     @bee.update(args)
+    update_particles(args)
   end
 
   def render(args)
@@ -80,9 +82,47 @@ class Game
 
     @world.render(args, @camera_x)
     @world.flowers.each { |flower| flower.render(args, @camera_x) }
+    render_particles(args)
     @bee.render(args)
     render_text(args, "Pollen: #{@bee.pollen}", 2, 62)
     render_text(args, "Nectar: #{@bee.nectar}", 2, 56)
+  end
+
+  private
+
+  def update_particles(args)
+    @particles.each do |particle|
+      particle[:x] += particle[:dx]
+      particle[:y] += particle[:dy]
+      particle[:lifetime] -= 1
+    end
+    @particles.reject! { |particle| particle[:lifetime] <= 0 }
+  end
+
+  def render_particles(args)
+    @particles.each do |particle|
+      args.lowrez.primitives << {
+        x: particle[:x] - @camera_x,
+        y: particle[:y],
+        w: 1,
+        h: 1,
+        r: 255,
+        g: 255,
+        b: 0
+      }.solid!
+    end
+  end
+
+  def create_nectar_particles(x, y, count = 10)
+    count.times do
+      @particles << {
+        x: x,
+        y: y,
+        dx: (rand(10) - 5) * 0.1,
+        dy: (rand(10) - 5) * 0.1,
+        lifetime: 60  # 2 seconds at 60 FPS
+      }
+    end
   end
 
   def render_text(args, text, x, y, alignment_enum = 0)
