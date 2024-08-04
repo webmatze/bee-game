@@ -181,69 +181,82 @@ class World
   end
 end
 
-$bee = Bee.new
-$world = World.new
-$camera_x = 0
+class Game
+  def initialize
+    @bee = Bee.new
+    @world = World.new
+    @camera_x = 0
+  end
 
-def tick args
-  args.lowrez.background_color = [0, 0, 0]
+  def tick(args)
+    handle_input(args)
+    update(args)
+    render(args)
+  end
 
-  args.lowrez.solids << {
-    x: 0,
-    y: 0,
-    w: 64,
-    h: 64,
-    r: 135,
-    g: 206,
-    b: 235
-  }
+  private
 
-  # Handle input for bee movement
-  if args.inputs.left
-    if $bee.x > 0  # Assuming the left side of the screen is at x=0
-      $bee.move_left
+  def handle_input(args)
+    if args.inputs.left
+      if @bee.x > 0
+        @bee.move_left
+      else
+        @camera_x = [@camera_x - Bee::X_SPEED, 0].max
+      end
+    elsif args.inputs.right
+      if @bee.x < 56
+        @bee.move_right
+      else
+        @camera_x = [@camera_x + Bee::X_SPEED, World::WORLD_WIDTH - 64].min
+      end
     else
-      $camera_x = [$camera_x - Bee::X_SPEED, 0].max
+      @bee.stop
     end
-  elsif args.inputs.right
-    if $bee.x < 56  # Assuming the right side of the screen is at x=56 (64 - 8)
-      $bee.move_right
-    else
-      $camera_x = [$camera_x + Bee::X_SPEED, World::WORLD_WIDTH - 64].min
-    end
-  else
-    $bee.stop
-  end
 
-  if args.inputs.up
-    if $bee.y < 56  # Assuming the top of the screen is at y=56 (64 - 8)
-      $bee.move_up
-    end
-  elsif args.inputs.down
-    if $bee.y > 0  # Assuming the bottom of the screen is at y=0
-      $bee.move_down
+    if args.inputs.up
+      @bee.move_up if @bee.y < 56
+    elsif args.inputs.down
+      @bee.move_down if @bee.y > 0
     end
   end
 
-  $bee.update(args)
-
-  $world.render(args, $camera_x)
-  $world.flowers.each do |flower|
-    flower.render(args, $camera_x)
+  def update(args)
+    @bee.update(args)
   end
-  $bee.render(args)
 
-  args.lowrez.labels  << {
-    x: 32,
-    y: 60,
-    text: "LowrezJam 2024",
-    size_enum: LOWREZ_FONT_SM,
-    alignment_enum: 1,
-    r: 0,
-    g: 0,
-    b: 0,
-    a: 128,
-    font: LOWREZ_FONT_PATH
-  }
+  def render(args)
+    args.lowrez.background_color = [0, 0, 0]
 
+    args.lowrez.solids << {
+      x: 0,
+      y: 0,
+      w: 64,
+      h: 64,
+      r: 135,
+      g: 206,
+      b: 235
+    }
+
+    @world.render(args, @camera_x)
+    @world.flowers.each { |flower| flower.render(args, @camera_x) }
+    @bee.render(args)
+    args.lowrez.labels << {
+      x: 32,
+      y: 60,
+      text: "LowrezJam 2024",
+      size_enum: LOWREZ_FONT_SM,
+      alignment_enum: 1,
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 128,
+      font: LOWREZ_FONT_PATH
+    }
+  end
+end
+
+$game = Game.new
+
+def tick(args)
+  $game.tick(args)
 end
