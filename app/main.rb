@@ -91,9 +91,11 @@ class Game
   private
 
   def update_particles(args)
+    gravity = 0.01  # Adjust this value to control the strength of gravity
     @particles.each do |particle|
       particle[:x] += particle[:dx]
       particle[:y] += particle[:dy]
+      particle[:dy] -= gravity  # Apply gravity to vertical velocity
       particle[:lifetime] -= 1
     end
     @particles.reject! { |particle| particle[:lifetime] <= 0 }
