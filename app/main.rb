@@ -84,8 +84,8 @@ class Game
     @world.flowers.each { |flower| flower.render(args, @camera_x) }
     render_particles(args)
     @bee.render(args)
-    render_text(args, "Pollen: #{@bee.pollen}", 2, 62)
-    render_text(args, "Nectar: #{@bee.nectar}", 2, 56)
+    render_text(args, "POLLEN: #{@bee.pollen}", 2, 62)
+    render_text(args, "NECTAR: #{@bee.nectar}", 2, 56)
   end
 
   private

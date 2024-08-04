@@ -21,8 +21,8 @@ class World
 
     # Add random flowers in the third row from the bottom
     flower_row = 3
-    (0..39).to_a.shuffle[0..10].each do |x|
-      @flowers << Flower.new(x, flower_row)
+    (0..39).to_a.shuffle[0..19].each do |x|
+      @flowers << Flower.new(x, flower_row - rand(4))
     end
   end
 
