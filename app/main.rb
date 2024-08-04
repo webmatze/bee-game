@@ -55,6 +55,10 @@ class Game
     elsif args.inputs.down
       @bee.move_down if @bee.y > 0
     end
+
+    if args.inputs.keyboard.key_down.space
+      @bee.collect_nectar_from_flowers(args)
+    end
   end
 
   def update(args)
