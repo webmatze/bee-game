@@ -2,7 +2,6 @@ class Bee
   GRAVITY = 0.005  # Constant for gravity effect
   JUMP_SPEED = 0.05
   X_SPEED = 0.5
-  COLLECTION_RANGE = 5  # Range within which the bee can collect from flowers
 
   attr_accessor :x, :y, :pollen, :nectar, :velocity_y
 
@@ -84,12 +83,28 @@ class Bee
     end
   end
 
-  def in_range?(flower, args)
+  def deposit_pollen_to_beehive(args)
+    if in_range?(args.state.game.beehive, args)
+      deposit_amount = [@pollen, 1].min
+      args.state.game.beehive.pollen += deposit_amount
+      @pollen -= deposit_amount
+    end
+  end
+
+  def deposit_nectar_to_beehive(args)
+    if in_range?(args.state.game.beehive, args)
+      deposit_amount = [@nectar, 1].min
+      args.state.game.beehive.nectar += deposit_amount
+      @nectar -= deposit_amount
+    end
+  end
+
+  def in_range?(target, args)
     camera_x = args.state.game.camera_x
-    dx = (flower.x * World::TILE_SIZE) - camera_x - @x
-    dy = (flower.y * World::TILE_SIZE) - @y
+    dx = (target.x * target.width) - camera_x - @x
+    dy = (target.y * target.height) - @y
     distance = Math.sqrt(dx * dx + dy * dy)
-    distance <= COLLECTION_RANGE
+    distance <= target.width / 2
   end
 
   def render(args)

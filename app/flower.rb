@@ -1,9 +1,11 @@
 class Flower
-  attr_reader :x, :y, :pollen, :nectar, :foreign_pollen
+  attr_reader :x, :y, :pollen, :nectar, :foreign_pollen, :width, :height
 
   def initialize(x, y)
     @x = x
     @y = y
+    @width = World::TILE_SIZE
+    @height = World::TILE_SIZE
     @pollen = 100  # Initial pollen amount
     @nectar = 100  # Initial nectar amount
     @foreign_pollen = {}  # Hash to store pollen from other flowers
@@ -31,8 +33,8 @@ class Flower
     args.lowrez.sprites << {
       x: screen_x,
       y: @y * World::TILE_SIZE,
-      w: World::TILE_SIZE,
-      h: World::TILE_SIZE,
+      w: @width,
+      h: @height,
       path: 'sprites/flower_1.png'
     }
   end

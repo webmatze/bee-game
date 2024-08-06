@@ -3,6 +3,7 @@ require 'app/lowrez.rb'
 require 'app/bee.rb'
 require 'app/flower.rb'
 require 'app/world.rb'
+require 'app/beehive.rb'
 
 # Bee Pollination Adventure
 #
@@ -17,11 +18,12 @@ require 'app/world.rb'
 # - Obstacles and challenges (to be implemented)
 
 class Game
-  attr_reader :bee, :world, :camera_x, :particles
+  attr_reader :bee, :world, :camera_x, :particles, :beehive
 
   def initialize
     @bee = Bee.new
     @world = World.new
+    @beehive = Beehive.new(1, 1.5)
     @camera_x = 0
     @particles = []
   end
@@ -60,6 +62,11 @@ class Game
     if args.inputs.keyboard.key_down.space
       @bee.collect_nectar_from_flowers(args)
     end
+
+    if args.inputs.keyboard.key_held.space
+      @bee.deposit_pollen_to_beehive(args)
+      @bee.deposit_nectar_to_beehive(args)
+    end
   end
 
   def update(args)
@@ -82,6 +89,7 @@ class Game
 
     @world.render(args, @camera_x)
     @world.flowers.each { |flower| flower.render(args, @camera_x) }
+    @beehive.render(args)
     render_particles(args)
     @bee.render(args)
     render_text(args, "POLLEN: #{@bee.pollen}", 2, 62)
