@@ -35,7 +35,13 @@ class Flower
       y: @y * World::TILE_SIZE,
       w: @width,
       h: @height,
-      path: 'sprites/flower_1.png'
+      path: flower_sprite
     }
+  end
+
+  def flower_sprite
+    sprite_id = @nectar > 50 ? 1 : 2
+    sprite_id = 3 if @nectar == 0
+    "sprites/flower_#{sprite_id}.png"
   end
 end

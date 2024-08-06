@@ -15,7 +15,7 @@ class World
     # Generate sky (6 rows) and ground (3 rows)
     (0...8).each do |y|
       (0...@tiles[y].length).each do |x|
-        @tiles[y][x] = y > 2 ? 0 : 1
+        @tiles[y][x] = y > 2 ? 0 : rand(2) + 1
       end
     end
 
@@ -51,7 +51,9 @@ class World
     when 0
       'sprites/sky.png'
     when 1
-      'sprites/grass.png'
+      'sprites/grass_1.png'
+    when 2
+      'sprites/grass_2.png'
     end
   end
 end
