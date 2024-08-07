@@ -4,6 +4,7 @@ require 'app/bee.rb'
 require 'app/flower.rb'
 require 'app/world.rb'
 require 'app/beehive.rb'
+require 'app/home_screen.rb'
 
 # Bee Pollination Adventure
 #
@@ -29,9 +30,16 @@ class Game
   end
 
   def tick(args)
-    handle_input(args)
-    update(args)
-    render(args)
+    case args.state.current_screen
+    when :home
+      args.state.home_screen.tick(args)
+    when :game
+      handle_input(args)
+      update(args)
+      render(args)
+    when :controls
+      render_controls(args)
+    end
   end
 
   private
@@ -96,8 +104,6 @@ class Game
     render_text(args, "NECTAR: #{@bee.nectar}", 2, 56)
   end
 
-  private
-
   def update_particles(args)
     gravity = 0.01  # Adjust this value to control the strength of gravity
     @particles.each do |particle|
@@ -135,26 +141,43 @@ class Game
     end
   end
 
-  def render_text(args, text, x, y, alignment_enum = 0)
+  def render_text(args, text, x, y, alignment_enum = 0, color = [0, 0, 0], alpha = 128)
     args.lowrez.labels << {
       x: x,
       y: y,
       text: text,
       size_enum: LOWREZ_FONT_SM,
       alignment_enum: alignment_enum,
-      r: 0,
-      g: 0,
-      b: 0,
-      a: 128,
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: alpha,
       font: LOWREZ_FONT_PATH
     }
   end
-end
 
+  def render_controls(args)
+    args.lowrez.background_color = [0, 0, 0]
+    args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
+
+    render_text(args, "Controls", 32, 60, 1, [255, 255, 0], 255)
+    render_text(args, "Arrow keys: Move", 2, 50, 0, [0,0,0], 255)
+    render_text(args, "Space: Collect/", 2, 40, 0, [0,0,0], 255)
+    render_text(args, "Deposit", 2, 32, 0, [0,0,0], 255)
+    render_text(args, "Press Enter", 32, 15, 1, [255, 255, 0], 255)
+    render_text(args, "to return", 32, 7, 1, [255, 255, 0], 255)
+
+    if args.inputs.keyboard.key_down.enter
+      args.state.current_screen = :home
+    end
+  end
+end
 
 def tick(args)
   if args.state.game.nil?
     args.state.game = Game.new
+    args.state.home_screen = HomeScreen.new
+    args.state.current_screen = :home
   end
   args.state.game.tick(args)
 end
