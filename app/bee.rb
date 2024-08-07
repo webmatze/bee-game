@@ -6,8 +6,8 @@ class Bee
   attr_accessor :x, :y, :pollen, :nectar, :velocity_y
 
   def initialize
-    @x = 16
-    @y = 32
+    @x = 28
+    @y = 34
     @pollen = 0
     @nectar = 0
     @animation_frame = 0
@@ -115,13 +115,13 @@ class Bee
       @last_frame_change = current_time
     end
 
-    args.lowrez.sprites << {
+    args.lowrez.primitives << {
       x: @x,
       y: @y,
       w: 8,
       h: 8,
       path: "sprites/bee_#{@animation_frame + 1}.png",
       angle: -@tilt_angle
-    }
+    }.sprite!
   end
 end

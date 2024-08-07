@@ -1,6 +1,7 @@
 class HomeScreen
   def initialize
-    @menu_items = ["Start Game", "Controls"]
+    @menu_items = ["START GAME", "CONTROLS"]
+    @bee = Bee.new
     @selected_item = 0
   end
 
@@ -29,8 +30,10 @@ class HomeScreen
     args.lowrez.background_color = [0, 0, 0]
     args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
 
-    render_text(args, "Bee Pollination", 32, 55, 1)
-    render_text(args, "Adventure", 32, 48, 1)
+    render_text(args, "BEE", 32, 55, 1)
+    render_text(args, "ADVENTURE", 32, 48, 1)
+
+    @bee.render(args)
 
     @menu_items.each_with_index do |item, index|
       color = index == @selected_item ? [255, 255, 0] : [255, 255, 255]

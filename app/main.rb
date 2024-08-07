@@ -75,6 +75,11 @@ class Game
       @bee.deposit_pollen_to_beehive(args)
       @bee.deposit_nectar_to_beehive(args)
     end
+
+    if args.inputs.keyboard.key_down.escape
+      args.state.current_screen = :home
+      args.state.game = Game.new
+    end
   end
 
   def update(args)
@@ -160,12 +165,12 @@ class Game
     args.lowrez.background_color = [0, 0, 0]
     args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
 
-    render_text(args, "Controls", 32, 60, 1, [255, 255, 0], 255)
-    render_text(args, "Arrow keys: Move", 2, 50, 0, [0,0,0], 255)
-    render_text(args, "Space: Collect/", 2, 40, 0, [0,0,0], 255)
-    render_text(args, "Deposit", 2, 32, 0, [0,0,0], 255)
-    render_text(args, "Press Enter", 32, 15, 1, [255, 255, 0], 255)
-    render_text(args, "to return", 32, 7, 1, [255, 255, 0], 255)
+    render_text(args, "CONTROLS", 32, 60, 1, [255, 255, 0], 255)
+    render_text(args, "ARROWS: move", 2, 50, 0, [0,0,0], 255)
+    render_text(args, "SPACE: collect", 2, 40, 0, [0,0,0], 255)
+    render_text(args, "deposit", 31, 32, 0, [0,0,0], 255)
+    render_text(args, "PRESS ENTER", 32, 15, 1, [255, 255, 0], 255)
+    render_text(args, "TO RETURN", 32, 7, 1, [255, 255, 0], 255)
 
     if args.inputs.keyboard.key_down.enter
       args.state.current_screen = :home
