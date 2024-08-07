@@ -67,8 +67,8 @@ class Game
 
   def create_levels
     [
-      Level.new(1, "Collect 500 pollen", :pollen, 500),
-      Level.new(2, "Collect 400 nectar in 60 seconds", :nectar, 400, 60),
+      Level.new(1, ["Collect", "500 pollen"], :pollen, 500),
+      Level.new(2, ["Collect", "400 nectar in", "60 seconds"], :nectar, 400, 60),
       # Add more levels here
     ]
   end
@@ -98,9 +98,15 @@ class Game
   def render_level_popup(args)
     args.lowrez.primitives << { x: 4, y: 4, w: 56, h: 56, r: 0, g: 0, b: 0, a: 200 }.solid!
     render_text(args, "Level #{@current_level.number}", 32, 50, 1, [255, 255, 0], 255)
-    render_text(args, @current_level.description, 32, 40, 1, [255, 255, 255], 255)
-    render_text(args, "Press ENTER", 32, 20, 1, [255, 255, 0], 255)
-    render_text(args, "to start", 32, 12, 1, [255, 255, 0], 255)
+
+    # Render multi-line description
+    y_offset = 40
+    @current_level.description_lines.each do |line|
+      render_text(args, line, 32, y_offset, 1, [255, 255, 255], 255)
+      y_offset -= 8  # Adjust this value to change line spacing
+    end
+
+    render_text(args, "Press ENTER", 32, 14, 1, [255, 255, 0], 255)
 
     if args.inputs.keyboard.key_down.enter
       @level_start_time = args.state.tick_count

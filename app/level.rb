@@ -3,7 +3,7 @@ class Level
 
   def initialize(number, description, goal_type, goal_amount, time_limit = nil)
     @number = number
-    @description = description
+    @description = description.is_a?(Array) ? description : [description]
     @goal_type = goal_type
     @goal_amount = goal_amount
     @time_limit = time_limit
@@ -24,6 +24,10 @@ class Level
 
   def show_popup?
     @show_popup
+  end
+
+  def description_lines
+    @description
   end
 
   def completed?(pollen, nectar, elapsed_time)
