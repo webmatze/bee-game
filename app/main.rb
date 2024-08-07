@@ -5,7 +5,7 @@ require 'app/flower.rb'
 require 'app/world.rb'
 require 'app/beehive.rb'
 require 'app/home_screen.rb'
-require 'app/level.rb'  # New file for Level class
+require 'app/level.rb'
 
 # Bee Pollination Adventure
 #
@@ -23,14 +23,7 @@ class Game
   attr_reader :bee, :world, :camera_x, :particles, :beehive, :current_level
 
   def initialize
-    @bee = Bee.new
-    @world = World.new
-    @beehive = Beehive.new(1, 1.5)
-    @camera_x = 0
-    @particles = []
-    @levels = create_levels
-    @current_level = nil
-    @level_start_time = 0
+    reset_game
   end
 
   def tick(args)
@@ -40,13 +33,15 @@ class Game
     when :game
       if @current_level.nil?
         start_next_level(args)
-      elsif @current_level.show_popup?
-        render_level_popup(args)
       else
-        handle_input(args)
-        update(args)
         render(args)
-        check_level_status(args)
+        if @current_level.show_popup?
+          render_level_popup(args)
+        else
+          handle_input(args)
+          update(args)
+          check_level_status(args)
+        end
       end
     when :controls
       render_controls(args)
@@ -54,6 +49,21 @@ class Game
   end
 
   private
+
+  def reset_game
+    reset_world
+    @particles = []
+    @levels = create_levels
+    @current_level = nil
+    @level_start_time = 0
+  end
+
+  def reset_world
+    @bee = Bee.new
+    @beehive = Beehive.new(1, 1.5)
+    @world = World.new
+    @camera_x = 0
+  end
 
   def create_levels
     [
@@ -65,7 +75,11 @@ class Game
 
   def start_next_level(args)
     @current_level = @levels.shift
-    return args.state.current_screen = :home if @current_level.nil?
+    if @current_level.nil?
+      reset_game
+      return args.state.current_screen = :home
+    end
+    reset_world
     @level_start_time = args.state.tick_count
     @current_level.start
   end
@@ -89,6 +103,7 @@ class Game
     render_text(args, "to start", 32, 12, 1, [255, 255, 0], 255)
 
     if args.inputs.keyboard.key_down.enter
+      @level_start_time = args.state.tick_count
       @current_level.hide_popup
     end
   end
@@ -157,11 +172,9 @@ class Game
     render_text(args, "POLLEN: #{@bee.pollen}", 2, 62)
     render_text(args, "NECTAR: #{@bee.nectar}", 2, 56)
 
-    # Add level info
-    render_text(args, "LVL: #{@current_level.number}", 62, 62, 2)
-    if @current_level.time_limit
+    if @current_level.time_limit && !@current_level.show_popup?
       remaining_time = [@current_level.time_limit - (args.state.tick_count - @level_start_time) / 60.0, 0].max.round(1)
-      render_text(args, "TIME: #{remaining_time}", 62, 56, 2)
+      render_text(args, "TIME: #{remaining_time}", 2, 50)
     end
   end
 
@@ -197,7 +210,7 @@ class Game
         y: y,
         dx: (rand(10) - 5) * 0.1,
         dy: (rand(10) - 5) * 0.1,
-        lifetime: 60  # 2 seconds at 60 FPS
+        lifetime: 60  # 1 second at 60 FPS
       }
     end
   end
