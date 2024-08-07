@@ -5,6 +5,7 @@ require 'app/flower.rb'
 require 'app/world.rb'
 require 'app/beehive.rb'
 require 'app/home_screen.rb'
+require 'app/level.rb'  # New file for Level class
 
 # Bee Pollination Adventure
 #
@@ -19,7 +20,7 @@ require 'app/home_screen.rb'
 # - Obstacles and challenges (to be implemented)
 
 class Game
-  attr_reader :bee, :world, :camera_x, :particles, :beehive
+  attr_reader :bee, :world, :camera_x, :particles, :beehive, :current_level
 
   def initialize
     @bee = Bee.new
@@ -27,6 +28,9 @@ class Game
     @beehive = Beehive.new(1, 1.5)
     @camera_x = 0
     @particles = []
+    @levels = create_levels
+    @current_level = nil
+    @level_start_time = 0
   end
 
   def tick(args)
@@ -34,15 +38,60 @@ class Game
     when :home
       args.state.home_screen.tick(args)
     when :game
-      handle_input(args)
-      update(args)
-      render(args)
+      if @current_level.nil?
+        start_next_level(args)
+      elsif @current_level.show_popup?
+        render_level_popup(args)
+      else
+        handle_input(args)
+        update(args)
+        render(args)
+        check_level_status(args)
+      end
     when :controls
       render_controls(args)
     end
   end
 
   private
+
+  def create_levels
+    [
+      Level.new(1, "Collect 500 pollen", :pollen, 500),
+      Level.new(2, "Collect 400 nectar in 60 seconds", :nectar, 400, 60),
+      # Add more levels here
+    ]
+  end
+
+  def start_next_level(args)
+    @current_level = @levels.shift
+    return args.state.current_screen = :home if @current_level.nil?
+    @level_start_time = args.state.tick_count
+    @current_level.start
+  end
+
+  def check_level_status(args)
+    elapsed_time = (args.state.tick_count - @level_start_time) / 60.0
+    if @current_level.completed?(@beehive.pollen, @beehive.nectar, elapsed_time)
+      # Level completed logic
+      start_next_level(args)
+    elsif @current_level.failed?(elapsed_time)
+      # Level failed logic
+      @current_level.reset
+    end
+  end
+
+  def render_level_popup(args)
+    args.lowrez.primitives << { x: 4, y: 4, w: 56, h: 56, r: 0, g: 0, b: 0, a: 200 }.solid!
+    render_text(args, "Level #{@current_level.number}", 32, 50, 1, [255, 255, 0], 255)
+    render_text(args, @current_level.description, 32, 40, 1, [255, 255, 255], 255)
+    render_text(args, "Press ENTER", 32, 20, 1, [255, 255, 0], 255)
+    render_text(args, "to start", 32, 12, 1, [255, 255, 0], 255)
+
+    if args.inputs.keyboard.key_down.enter
+      @current_level.hide_popup
+    end
+  end
 
   def handle_input(args)
     if args.inputs.left
@@ -107,6 +156,13 @@ class Game
     @bee.render(args)
     render_text(args, "POLLEN: #{@bee.pollen}", 2, 62)
     render_text(args, "NECTAR: #{@bee.nectar}", 2, 56)
+
+    # Add level info
+    render_text(args, "LVL: #{@current_level.number}", 62, 62, 2)
+    if @current_level.time_limit
+      remaining_time = [@current_level.time_limit - (args.state.tick_count - @level_start_time) / 60.0, 0].max.round(1)
+      render_text(args, "TIME: #{remaining_time}", 62, 56, 2)
+    end
   end
 
   def update_particles(args)
