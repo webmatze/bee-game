@@ -30,8 +30,8 @@ class HomeScreen
     args.lowrez.background_color = [0, 0, 0]
     args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
 
-    render_text(args, "BEE", 32, 55, 1)
-    render_text(args, "ADVENTURE", 32, 48, 1)
+    render_text(args, "A BEES", 32, 55, 1)
+    render_text(args, "LIFE", 32, 48, 1)
 
     @bee.render(args)
 

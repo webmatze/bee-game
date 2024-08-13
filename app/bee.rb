@@ -27,6 +27,8 @@ class Bee
     apply_gravity
     update_tilt
     collect_pollen_from_flowers(args)
+    deposit_pollen_to_beehive(args)
+    deposit_nectar_to_beehive(args)
   end
 
   def move_left

@@ -141,11 +141,6 @@ class Game
       @bee.collect_nectar_from_flowers(args)
     end
 
-    if args.inputs.keyboard.key_held.space
-      @bee.deposit_pollen_to_beehive(args)
-      @bee.deposit_nectar_to_beehive(args)
-    end
-
     if args.inputs.keyboard.key_down.escape
       args.state.current_screen = :home
       args.state.game = Game.new
