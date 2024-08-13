@@ -1,8 +1,8 @@
 [project]
 # The name of your game's executable. This should only contain a-z, A-Z, 0-9, _ or -.
-name = "bee-game"
+name = "a-bees-life"
 # The game's title. This will show up in the tile bar of your executable.
-title = "bee game"
+title = "a bees life"
 version = "0.1.0"
 authors = ["Mathias Karstädt <mathias.karstaedt@gmail.com>"]
 icon = "metadata/icon.png"
