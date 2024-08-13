@@ -71,8 +71,15 @@ class Game
 
   def create_levels
     [
-      Level.new(1, ["Collect", "500 pollen"], :pollen, 500),
-      Level.new(2, ["Collect", "400 nectar in", "60 seconds"], :nectar, 400, 60),
+      Level.new(1, ["Collect", "300 pollen"], :pollen, 300),
+      Level.new(2, ["Collect", "300 nectar by", "pressing space"], :nectar, 300),
+      Level.new(3, ["Collect", "300 nectar in", "30 seconds"], :nectar, 300, 30),
+      Level.new(4, ["Collect", "300 pollen in", "30 seconds"], :pollen, 300, 30),
+      Level.new(5, ["Collect", "400 nectar in", "40 seconds"], :nectar, 400, 40),
+      Level.new(6, ["Collect", "500 pollen in", "40 seconds"], :pollen, 500, 40),
+      Level.new(7, ["Collect", "600 nectar in", "60 seconds"], :nectar, 600, 60),
+      Level.new(8, ["Collect", "1000 pollen in", "80 seconds"], :pollen, 1000, 80),
+      Level.new(9, ["Collect", "1000 nectar in", "80 seconds"], :nectar, 1000, 80),
       # Add more levels here
     ]
   end
