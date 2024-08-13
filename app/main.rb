@@ -24,13 +24,16 @@ class Game
 
   def initialize
     reset_game
+    load_background_music
   end
 
   def tick(args)
     case args.state.current_screen
     when :home
       args.state.home_screen.tick(args)
+      play_background_music
     when :game
+      play_background_music
       if @current_level.nil?
         start_next_level(args)
       else
@@ -44,6 +47,7 @@ class Game
         end
       end
     when :controls
+      play_background_music
       render_controls(args)
     end
   end
@@ -236,15 +240,27 @@ class Game
     args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
 
     render_text(args, "CONTROLS", 32, 60, 1, [255, 255, 0], 255)
-    render_text(args, "ARROWS: move", 2, 50, 0, [0,0,0], 255)
-    render_text(args, "SPACE: collect", 2, 40, 0, [0,0,0], 255)
-    render_text(args, "deposit", 31, 32, 0, [0,0,0], 255)
+    render_text(args, "ARROWS: MOVE", 2, 50, 0, [0,0,0], 255)
+    render_text(args, "SPACE: COLLECT", 2, 40, 0, [0,0,0], 255)
+    render_text(args, "NECTAR", 31, 32, 0, [0,0,0], 255)
     render_text(args, "PRESS ENTER", 32, 15, 1, [255, 255, 0], 255)
     render_text(args, "TO RETURN", 32, 7, 1, [255, 255, 0], 255)
 
     if args.inputs.keyboard.key_down.enter
       args.state.current_screen = :home
     end
+  end
+
+  def load_background_music
+    $gtk.audio[:background_music] = { input: 'sounds/Whispers of the Meadow.mp3', looping: true }
+  end
+
+  def play_background_music
+    $gtk.audio[:background_music].play
+  end
+
+  def stop_background_music
+    $gtk.audio[:background_music].stop
   end
 end
 
