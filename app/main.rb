@@ -103,6 +103,7 @@ class Game
     elsif @current_level.failed?(elapsed_time)
       # Level failed logic
       @current_level.reset
+      reset_world
     end
   end
 
