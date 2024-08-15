@@ -2,7 +2,7 @@
 # Do not manually edit this file. Edit Smaug.toml instead.
 
 devid=webmatze
-devtitle=Mathias Karstädt &lt;mathias.karstaedt@gmail.com&gt;
+devtitle=Mathias Karstädt
 gameid=a-bees-life
 gametitle=a bees life
 version=0.1.0

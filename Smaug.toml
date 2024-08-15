@@ -4,7 +4,7 @@ name = "a-bees-life"
 # The game's title. This will show up in the tile bar of your executable.
 title = "a bees life"
 version = "0.1.0"
-authors = ["Mathias Karstädt <mathias.karstaedt@gmail.com>"]
+authors = ["Mathias Karstädt"]
 icon = "metadata/icon.png"
 compile_ruby = false
 
