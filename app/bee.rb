@@ -81,6 +81,7 @@ class Bee
         collected_nectar = flower.collect_nectar(5)
         @nectar += collected_nectar
         args.state.game.create_nectar_particles(@x + 4 + args.state.game.camera_x, @y + 4, collected_nectar)
+        args.audio[:collect_nectar] = { input: 'sounds/particle.wav', gain: 1.3 }
       end
     end
   end
