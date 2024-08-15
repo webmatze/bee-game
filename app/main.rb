@@ -166,6 +166,7 @@ class Game
 
     if args.inputs.up
       @bee.move_up if @bee.y < 56
+      args.audio[:up] = { input: 'sounds/flap.wav', gain: 1.8 }
     elsif args.inputs.down
       @bee.move_down if @bee.y > 0
     end
@@ -281,7 +282,7 @@ class Game
   end
 
   def load_background_music
-    $gtk.audio[:background_music] = { input: 'sounds/Whispers of the Meadow.mp3', looping: true }
+    $gtk.audio[:background_music] = { input: 'sounds/Whispers of the Meadow.mp3', looping: true, gain: 0.6 }
   end
 
   def play_background_music
