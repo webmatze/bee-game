@@ -28,7 +28,17 @@ class Game
   end
 
   def tick(args)
+    if !args.state.title_screen_start_time
+      args.state.title_screen_start_time = args.state.tick_count
+      args.state.current_screen = :title
+    end
+
     case args.state.current_screen
+    when :title
+      render_title_screen(args)
+      if args.state.tick_count - args.state.title_screen_start_time >= 300
+        args.state.current_screen = :home
+      end
     when :home
       args.state.home_screen.tick(args)
       play_background_music
@@ -105,6 +115,17 @@ class Game
       @current_level.reset
       reset_world
     end
+  end
+
+  def render_title_screen(args)
+    args.lowrez.background_color = [0, 0, 0]
+    args.lowrez.sprites << {
+      x: 0,
+      y: 0,
+      w: 64,
+      h: 64,
+      path: 'sprites/title.png'
+    }
   end
 
   def render_level_popup(args)
