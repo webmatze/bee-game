@@ -166,9 +166,12 @@ class Game
 
     if args.inputs.up
       @bee.move_up if @bee.y < 56
-      args.audio[:up] = { input: 'sounds/flap.wav', gain: 1.8 }
     elsif args.inputs.down
       @bee.move_down if @bee.y > 0
+    end
+
+    if args.inputs.keyboard.key_down.up
+      args.audio[:up] = { input: 'sounds/flap.mp3', gain: 2.5 }
     end
 
     if args.inputs.keyboard.key_down.space
