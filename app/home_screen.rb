@@ -28,16 +28,17 @@ class HomeScreen
 
   def render(args)
     args.lowrez.background_color = [0, 0, 0]
-    args.lowrez.primitives << { x: 0, y: 0, w: 64, h: 64, r: 135, g: 206, b: 235 }.solid!
-
-    render_text(args, "A BEES", 32, 55, 1)
-    render_text(args, "LIFE", 32, 48, 1)
-
-    @bee.render(args)
+    args.lowrez.sprites << {
+      x: 0,
+      y: 0,
+      w: 64,
+      h: 64,
+      path: 'sprites/menu.png'
+    }
 
     @menu_items.each_with_index do |item, index|
       color = index == @selected_item ? [255, 255, 0] : [255, 255, 255]
-      render_text(args, item, 32, 30 - index * 10, 1, color)
+      render_text(args, item, 32, 20 - index * 10, 1, color)
     end
   end
 
