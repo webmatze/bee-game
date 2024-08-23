@@ -212,7 +212,7 @@ class Game
 
     if @current_level.time_limit && !@current_level.show_popup?
       remaining_time = [@current_level.time_limit - (args.state.tick_count - @level_start_time) / 60.0, 0].max.round(1)
-      render_text(args, "TIME: #{remaining_time}", 2, 50)
+      render_text(args, "TIME: #{sprintf('%.1f', remaining_time)}", 2, 50)
     end
   end
 
